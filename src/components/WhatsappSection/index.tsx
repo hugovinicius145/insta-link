@@ -7,9 +7,6 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
   Input,
   ModalCloseButton,
   useDisclosure,
@@ -22,6 +19,10 @@ import InputMask from 'react-input-mask';
 import { FaWhatsapp } from 'react-icons/fa';
 
 import styles from './styles.module.scss';
+
+import { api } from '../../services/api';
+
+import { msgHTML } from '../../util/mail/msgHTML';
 
 export function WhatsappSection() {
   const [name, setName] = useState('');
@@ -60,6 +61,18 @@ export function WhatsappSection() {
     e.preventDefault();
     setIsloading(true);
 
+    try {
+      await api.post('/mail/send-new-contact', {
+        subject: "New Contact - @hugoviniccius",
+        textMail: "",
+        msgHtml: msgHTML({ userName: name, phoneNumber: phone, description })
+      });
+
+      successToast();
+    } catch (err) {
+      console.log(err);
+      errorToast();
+    }
 
     onClose();
     setIsloading(false);
@@ -75,7 +88,7 @@ export function WhatsappSection() {
         py="8"
         onClick={onOpen}
       >
-        Fale cmg no Whatsapp
+        Fale comigo no Whatsapp
       </Button>
 
       <Modal
